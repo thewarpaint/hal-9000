@@ -57,6 +57,7 @@ if (!CETESDIRECTO_PASSWORD) {
 
   console.log(`Total instruments: MXN ${totalInstrumentsText}`);
 
+  // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
   await page.click(selectors.logoutLink);
 
   // TODO: Tweak
