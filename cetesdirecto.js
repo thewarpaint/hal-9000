@@ -54,7 +54,7 @@ if (!CETESDIRECTO_PASSWORD) {
   const $totalInstruments = await page.$(selectors.totalInstrumentsText);
   const totalInstrumentsText = await page.evaluate(element => element.textContent, $totalInstruments);
 
-  console.log(totalInstrumentsText);
+  console.log(`Total instruments: MXN ${totalInstrumentsText}`);
 
   await page.click(selectors.logoutLink);
 
