@@ -32,6 +32,7 @@ if (!CETESDIRECTO_PASSWORD) {
 
 (async () => {
   const browser = await puppeteer.launch({
+    // TODO: Control via env variable, default: true
     headless: false
   });
   const page = await browser.newPage();
