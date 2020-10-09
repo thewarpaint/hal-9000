@@ -30,13 +30,7 @@ if (!CETESDIRECTO_PASSWORD) {
   process.exit(1);
 }
 
-(async () => {
-  const browser = await puppeteer.launch({
-    // TODO: Control via env variable, default: true
-    headless: false
-  });
-  const page = await browser.newPage();
-
+async function login(page) {
   await page.goto(urls.login);
 
   await page.waitForSelector(selectors.usernameInput, { visible: true });
@@ -46,7 +40,9 @@ if (!CETESDIRECTO_PASSWORD) {
   await page.waitForSelector(selectors.passwordInput, { visible: true });
   await page.type(selectors.passwordInput, CETESDIRECTO_PASSWORD);
   await page.click(selectors.loginBtn);
+}
 
+async function getPortfolioSummary(page) {
   await page.waitForSelector(selectors.portfolioLink, { visible: true });
   await page.goto(urls.portfolio);
 
@@ -55,7 +51,23 @@ if (!CETESDIRECTO_PASSWORD) {
   const $totalInstruments = await page.$(selectors.totalInstrumentsText);
   const totalInstrumentsText = await page.evaluate(element => element.textContent, $totalInstruments);
 
-  console.log(`Total instruments: MXN ${totalInstrumentsText}`);
+  return {
+    totalInstruments: totalInstrumentsText,
+  };
+}
+
+(async () => {
+  const browser = await puppeteer.launch({
+    // TODO: Control via env variable, default: true
+    headless: false
+  });
+  const page = await browser.newPage();
+
+  await login(page);
+
+  const portfolioSummary = await getPortfolioSummary(page);
+
+  console.log(`Total instruments: MXN ${portfolioSummary.totalInstruments}`);
 
   // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
   await page.click(selectors.logoutLink);
