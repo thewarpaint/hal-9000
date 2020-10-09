@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer';
 const {
   CETESDIRECTO_PASSWORD,
   CETESDIRECTO_USERNAME,
+  PUPPETEER_HEADLESS = 'true',
 } = process.env;
 
 const selectors = {
@@ -82,8 +83,7 @@ async function getPortfolioSummary(page) {
 
 (async () => {
   const browser = await puppeteer.launch({
-    // TODO: Control via env variable, default: true
-    headless: false
+    headless: PUPPETEER_HEADLESS === 'true',
   });
   const page = await browser.newPage();
 
