@@ -11,6 +11,9 @@ const selectors = {
   logoutLink: '#btnsUserWeb [data-name="cerrarSesion"]:nth-child(4)',
   passwordInput: '#pwdId',
   portfolioLink: '#portafolioMenu',
+  instrumentNameText: '.nombreInstrumento .txtInstrumento',
+  instrumentValueText: '.valorInstrumento .totalInstrumento',
+  instruments: '.instrumento',
   instrumentsTotalText: '.totalInstrumentos .totalInstrumentosNumeros .txtInstrumento',
   usernameInput: '#userId',
 };
@@ -51,7 +54,22 @@ async function getPortfolioSummary(page) {
   const $instrumentsTotal = await page.$(selectors.instrumentsTotalText);
   const instrumentsTotalText = await page.evaluate(element => element.textContent, $instrumentsTotal);
 
+  const $instruments = await page.$$(selectors.instruments);
+  const instrumentsDetail = await Promise.all($instruments.map(async ($instrument) => {
+    const $instrumentName = await $instrument.$(selectors.instrumentNameText);
+    const instrumentNameText = await page.evaluate(element => element.textContent, $instrumentName);
+
+    const $instrumentValue = await $instrument.$(selectors.instrumentValueText);
+    const instrumentValueText = await page.evaluate(element => element.textContent, $instrumentValue);
+
+    return {
+      name: instrumentNameText,
+      value: instrumentValueText,
+    };
+  }));
+
   return {
+    instruments: instrumentsDetail,
     instrumentsTotal: instrumentsTotalText,
   };
 }
@@ -67,7 +85,7 @@ async function getPortfolioSummary(page) {
 
   const portfolioSummary = await getPortfolioSummary(page);
 
-  console.log(`Instruments total: MXN ${portfolioSummary.instrumentsTotal}`);
+  console.log('Portfolio summary:', portfolioSummary);
 
   // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
   await page.click(selectors.logoutLink);
