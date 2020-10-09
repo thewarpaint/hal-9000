@@ -11,7 +11,7 @@ const selectors = {
   logoutLink: '#btnsUserWeb [data-name="cerrarSesion"]:nth-child(4)',
   passwordInput: '#pwdId',
   portfolioLink: '#portafolioMenu',
-  totalInstrumentsText: '.totalInstrumentos .totalInstrumentosNumeros .txtInstrumento',
+  instrumentsTotalText: '.totalInstrumentos .totalInstrumentosNumeros .txtInstrumento',
   usernameInput: '#userId',
 };
 
@@ -46,13 +46,13 @@ async function getPortfolioSummary(page) {
   await page.waitForSelector(selectors.portfolioLink, { visible: true });
   await page.goto(urls.portfolio);
 
-  await page.waitForSelector(selectors.totalInstrumentsText, { visible: true });
+  await page.waitForSelector(selectors.instrumentsTotalText, { visible: true });
 
-  const $totalInstruments = await page.$(selectors.totalInstrumentsText);
-  const totalInstrumentsText = await page.evaluate(element => element.textContent, $totalInstruments);
+  const $instrumentsTotal = await page.$(selectors.instrumentsTotalText);
+  const instrumentsTotalText = await page.evaluate(element => element.textContent, $instrumentsTotal);
 
   return {
-    totalInstruments: totalInstrumentsText,
+    instrumentsTotal: instrumentsTotalText,
   };
 }
 
@@ -67,7 +67,7 @@ async function getPortfolioSummary(page) {
 
   const portfolioSummary = await getPortfolioSummary(page);
 
-  console.log(`Total instruments: MXN ${portfolioSummary.totalInstruments}`);
+  console.log(`Instruments total: MXN ${portfolioSummary.instrumentsTotal}`);
 
   // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
   await page.click(selectors.logoutLink);
