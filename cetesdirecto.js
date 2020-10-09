@@ -45,6 +45,12 @@ async function login(page) {
   await page.click(selectors.loginBtn);
 }
 
+// Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
+async function logout(page) {
+  await page.click(selectors.logoutLink);
+  await page.waitForSelector(selectors.usernameInput, { visible: true });
+}
+
 async function getPortfolioSummary(page) {
   await page.waitForSelector(selectors.portfolioLink, { visible: true });
   await page.goto(urls.portfolio);
@@ -87,11 +93,6 @@ async function getPortfolioSummary(page) {
 
   console.log('Portfolio summary:', portfolioSummary);
 
-  // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
-  await page.click(selectors.logoutLink);
-
-  // TODO: Tweak
-  await page.waitForTimeout(10000);
-
+  await logout(page);
   await browser.close();
 })();
