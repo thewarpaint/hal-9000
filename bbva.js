@@ -14,14 +14,14 @@ const urls = {
 const selectors = {
   cardNumberInput: '#tempCuenta',
   loginBtn: '#loginButton',
-  optInput: (index) => `.inputToken[tabindex="${index+1}"]`,
+  otpInput: (index) => `.inputToken[tabindex="${index+1}"]`,
   showLoginFormBtn: '.header__actions__ulist .header__actions__list:nth-child(2) .header__actions__item__link',
 };
 
 // TODO: Improve signature
 async function login(page, cardNumber, password, otp) {
   if (otp.length !== 8) {
-    console.error(`opt length is ${otp.length}, expected 8 characters!`);
+    console.error(`otp length is ${otp.length}, expected 8 characters!`);
     process.exit(1);
   }
 
@@ -39,10 +39,10 @@ async function login(page, cardNumber, password, otp) {
   await page.click(selectors.loginBtn);
 
   // Wait for the first OTP input to be visible
-  await page.waitForSelector(selectors.optInput(0), { visible: true });
+  await page.waitForSelector(selectors.otpInput(0), { visible: true });
 
   await Promise.all(otp.split('').map(async (otpChar, i) => {
-    await page.type(selectors.optInput(i), otpChar);
+    await page.type(selectors.otpInput(i), otpChar);
   }));
 
   // TODO: Use correct selector
