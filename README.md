@@ -1,5 +1,7 @@
 # HAL-9000
 
+An automation for the rest of us.
+
 1. Install the dependencies:
 
     ```
