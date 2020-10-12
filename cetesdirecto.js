@@ -24,16 +24,6 @@ const urls = {
   portfolio: 'https://www.cetesdirecto.com/web/loadPortafolio',
 };
 
-if (!CETESDIRECTO_USERNAME) {
-  console.error(`CETESDIRECTO_USERNAME was not set!`);
-  process.exit(1);
-}
-
-if (!CETESDIRECTO_PASSWORD) {
-  console.error(`CETESDIRECTO_PASSWORD was not set!`);
-  process.exit(1);
-}
-
 async function login(page) {
   await page.goto(urls.login);
 
@@ -81,7 +71,17 @@ async function getPortfolioSummary(page) {
   };
 }
 
-(async () => {
+async function main() {
+  if (!CETESDIRECTO_USERNAME) {
+    console.error(`CETESDIRECTO_USERNAME was not set!`);
+    process.exit(1);
+  }
+
+  if (!CETESDIRECTO_PASSWORD) {
+    console.error(`CETESDIRECTO_PASSWORD was not set!`);
+    process.exit(1);
+  }
+
   const browser = await puppeteer.launch({
     headless: PUPPETEER_HEADLESS === 'true',
   });
@@ -95,4 +95,8 @@ async function getPortfolioSummary(page) {
 
   await logout(page);
   await browser.close();
+}
+
+(async () => {
+  await main();
 })();
