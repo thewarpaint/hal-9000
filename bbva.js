@@ -12,12 +12,19 @@ const urls = {
 };
 
 const selectors = {
+  acceptLogoutLink: '#aceptar_logout',
   cardNumberInput: '#tempCuenta',
+  homeFrameA: 'frame',
+  homeFrameB: '#tdcDetails',
   loginBtn: '#loginButton',
   loginIframe: '.access__iframe',
+  logoutBtn: '#signOff',
   // index is 0-based, we convert to 1-based tabindex transparently
   otpInput: (index) => `.inputToken[tabindex="${index+1}"]`,
   passwordInput: '#password',
+  productCards: '#app__products cells-widget-product-card',
+  productCardAmount: '.sr-amount.style-scope.cells-atom-amount',
+  productCardTitle: '.card-title.style-scope.cells-widget-product-card',
   showLoginFormBtn: '.header__actions__ulist .header__actions__list:nth-child(2) .header__actions__item__link',
   validateTokenBtn: '#envioToken',
 };
@@ -61,17 +68,45 @@ async function login(page, cardNumber, password, otp) {
   }
 
   await page.click(selectors.validateTokenBtn);
-
-  // TODO: Wait for an element to confirm login
+  await page.waitForSelector(selectors.homeFrameA, { visible: true });
 }
 
 // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
-async function logout() {
-  // TODO: Implement
+async function logout(page, homeContentFrameA) {
+  await homeContentFrameA.click(selectors.logoutBtn);
+
+  // TODO: Fix selector
+  await page.waitForSelector(selectors.acceptLogoutLink, { visible: true });
 }
 
-async function getSummary() {
-  // TODO: Implement
+async function getSummary(homeContentFrameA) {
+  await homeContentFrameA.waitForSelector(selectors.homeFrameB, { visible: true });
+
+  const $homeFrameB = await homeContentFrameA.$(selectors.homeFrameB);
+  const homeContentFrameB = await $homeFrameB.contentFrame();
+
+  await homeContentFrameB.waitForSelector(selectors.productCards, { visible: true });
+
+  const $productCards = await homeContentFrameB.$$(selectors.productCards);
+
+  const productStatuses = await Promise.all($productCards.map(async ($productCard) => {
+    const $productCardTitle = await $productCard.$(selectors.productCardTitle);
+    const productCardTitleText = await homeContentFrameB.evaluate(element => element.textContent, $productCardTitle);
+
+    if (productCardTitleText.trim() === '') {
+      return null;
+    }
+
+    const $productCardAmount = await $productCard.$(selectors.productCardAmount);
+    const productCardAmountText = await homeContentFrameB.evaluate(element => element.textContent, $productCardAmount);
+
+    return {
+      title: productCardTitleText,
+      amount: productCardAmountText,
+    };
+  }));
+
+  return productStatuses.filter((productStatus) => productStatus !== null);
 }
 
 async function main() {
@@ -95,10 +130,20 @@ async function main() {
   });
   const page = await browser.newPage();
 
+  // Set a wide viewport so that all product cards are visible and interaction is simpler
+  await page.setViewport({ width: 1280, height: 800 });
+
   await login(page, BBVA_CARD_NUMBER, BBVA_PASSWORD, BBVA_OTP);
 
-  // TODO: Remove
-  await page.waitForTimeout(10000);
+  // The BBVA homepage has an iframe inside a frame for whatever reason...
+  const $homeFrameA = await page.$(selectors.homeFrameA);
+  const homeContentFrameA = await $homeFrameA.contentFrame();
+
+  const summary = await getSummary(homeContentFrameA);
+
+  console.log('BBVA summary:', summary);
+
+  await logout(page, homeContentFrameA);
 }
 
 (async () => {
