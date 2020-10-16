@@ -144,6 +144,7 @@ async function main() {
   console.log('BBVA summary:', summary);
 
   await logout(page, homeContentFrameA);
+  await browser.close();
 }
 
 (async () => {
