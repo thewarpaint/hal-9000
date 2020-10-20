@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
 
+import { sanitize } from './helpers.js';
+
 const {
   ALLIANZ_USERNAME,
   ALLIANZ_PASSWORD,
@@ -49,7 +51,7 @@ async function getSummary(page) {
   const policyAmountText = await page.evaluate(element => element.textContent, $policyAmount);
 
   return {
-    policyAmount: policyAmountText,
+    policyAmount: sanitize(policyAmountText),
   };
 }
 
