@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
 
+import { sanitize } from './helpers.js';
+
 const {
   CETESDIRECTO_PASSWORD,
   CETESDIRECTO_USERNAME,
@@ -61,13 +63,13 @@ async function getPortfolioSummary(page) {
 
     return {
       name: instrumentNameText,
-      value: instrumentValueText,
+      value: sanitize(instrumentValueText),
     };
   }));
 
   return {
     instruments: instrumentsDetail,
-    instrumentsTotal: instrumentsTotalText,
+    instrumentsTotal: sanitize(instrumentsTotalText),
   };
 }
 
