@@ -38,7 +38,7 @@ node allianz.js
 
 ```
 Allianz summary: {
-  policyAmount: '$123,456.78',
+  policyAmount: '123456.78',
 }
 ```
 
@@ -66,9 +66,9 @@ node cetesdirecto.js
 CetesDirecto summary: {
   instruments: [
     { name: 'BONDDIA', value: '123.45' },
-    { name: 'CETES', value: '9,876.54' },
+    { name: 'CETES', value: '9876.54' },
     { name: 'REMANENTES', value: '34.56' }
   ],
-  instrumentsTotal: '12,345.98'
+  instrumentsTotal: '12345.98'
 }
 ```
