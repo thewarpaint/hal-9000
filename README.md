@@ -72,3 +72,19 @@ CetesDirecto summary: {
   instrumentsTotal: '12345.98'
 }
 ```
+
+### [Infonavit](https://micuenta.infonavit.org.mx/)
+
+```sh
+node infonavit-example.js
+```
+
+```
+Infonavit summary: {
+  savings: [
+    { type: 'Subcuenta de Vivienda 1997', amount: '1234567.98' },
+    { type: 'Subcuenta de Vivienda SAR 1992', amount: '0.00' },
+    { type: 'Fondo de ahorro 1972', amount: '0.00' }
+  ]
+}
+```
