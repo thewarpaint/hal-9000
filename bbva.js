@@ -1,11 +1,4 @@
-import puppeteer from 'puppeteer';
-
-const {
-  BBVA_CARD_NUMBER,
-  BBVA_PASSWORD,
-  BBVA_OTP,
-  PUPPETEER_HEADLESS = 'true',
-} = process.env;
+import { sanitize } from './helpers.js';
 
 const urls = {
   home: 'https://www.bbva.mx/',
@@ -72,14 +65,18 @@ async function login(page, cardNumber, password, otp) {
 }
 
 // Session needs to be closed, otherwise you won't be able to log in again for ~15 mins
-async function logout(page, homeContentFrameA) {
+async function logout(page) {
+  const homeContentFrameA = await getHomeContentFrameFromPage(page);
+
   await homeContentFrameA.click(selectors.logoutBtn);
 
   // TODO: Fix selector
   await page.waitForSelector(selectors.acceptLogoutLink, { visible: true });
 }
 
-async function getSummary(homeContentFrameA) {
+async function getSummary(page) {
+  const homeContentFrameA = await getHomeContentFrameFromPage(page);
+
   await homeContentFrameA.waitForSelector(selectors.homeFrameB, { visible: true });
 
   const $homeFrameB = await homeContentFrameA.$(selectors.homeFrameB);
@@ -102,51 +99,23 @@ async function getSummary(homeContentFrameA) {
 
     return {
       title: productCardTitleText,
-      amount: productCardAmountText,
+      amount: sanitize(productCardAmountText),
     };
   }));
 
   return productStatuses.filter((productStatus) => productStatus !== null);
 }
 
-async function main() {
-  if (!BBVA_CARD_NUMBER) {
-    console.error(`BBVA_CARD_NUMBER was not set!`);
-    process.exit(1);
-  }
-
-  if (!BBVA_PASSWORD) {
-    console.error(`BBVA_PASSWORD was not set!`);
-    process.exit(1);
-  }
-
-  if (!BBVA_OTP) {
-    console.error(`BBVA_OTP was not set!`);
-    process.exit(1);
-  }
-
-  const browser = await puppeteer.launch({
-    headless: PUPPETEER_HEADLESS === 'true',
-  });
-  const page = await browser.newPage();
-
-  // Set a wide viewport so that all product cards are visible and interaction is simpler
-  await page.setViewport({ width: 1280, height: 800 });
-
-  await login(page, BBVA_CARD_NUMBER, BBVA_PASSWORD, BBVA_OTP);
-
+async function getHomeContentFrameFromPage(page) {
   // The BBVA homepage has an iframe inside a frame for whatever reason...
   const $homeFrameA = await page.$(selectors.homeFrameA);
   const homeContentFrameA = await $homeFrameA.contentFrame();
 
-  const summary = await getSummary(homeContentFrameA);
-
-  console.log('BBVA summary:', summary);
-
-  await logout(page, homeContentFrameA);
-  await browser.close();
+  return homeContentFrameA;
 }
 
-(async () => {
-  await main();
-})();
+export {
+  login,
+  logout,
+  getSummary,
+};
