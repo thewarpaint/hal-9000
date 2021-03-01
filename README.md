@@ -33,7 +33,7 @@ The easiest way to do that is through UI automation.
 ### [Allianz](https://www.allianz.com.mx/)
 
 ```sh
-node allianz.js
+node allianz-example.js
 ```
 
 ```
@@ -45,21 +45,21 @@ Allianz summary: {
 ### [BBVA](https://www.bbva.mx/)
 
 ```sh
-node bbva.js
+node bbva-example.js
 ```
 
 ```
 BBVA summary: [
-  { title: 'Cuenta de nómina • 01234', amount: '$234,567.89' },
-  { title: 'Fondos de Inversión • 98765', amount: '$98,765.43' },
-  { title: 'Pagaré • 54321', amount: '$5,432.10' }
+  { title: 'Cuenta de nómina • 01234', amount: '234567.89' },
+  { title: 'Fondos de Inversión • 98765', amount: '98765.43' },
+  { title: 'Pagaré • 54321', amount: '$5432.10' }
 ]
 ```
 
 ### [cetesdirecto](https://www.cetesdirecto.com/)
 
 ```sh
-node cetesdirecto.js
+node cetesdirecto-example.js
 ```
 
 ```
