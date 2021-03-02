@@ -88,3 +88,13 @@ Infonavit summary: {
   ]
 }
 ```
+
+### [N26](https://n26.com/)
+
+```sh
+node n26-example.js
+```
+
+```
+N26 summary: { balance: '9876.54' }
+```
